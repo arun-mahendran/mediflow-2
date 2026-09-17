@@ -72,8 +72,13 @@ export default function DoctorConsultation() {
     }
     setBusy(true);
     try {
+      if (!data.consult) {
+        toast.error("Consultation record not found.");
+        return;
+      }
+
       await completeConsultation({
-        queueId,
+        consultationId: data.consult.id,
         doctorId: auth.doctorId,
         notes,
         diagnosis,

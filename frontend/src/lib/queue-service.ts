@@ -31,13 +31,13 @@ export async function startConsultation(queueRow: QueueRow, doctorId: string) {
 }
 
 export async function completeConsultation(params: {
-  queueId: string;
+  consultationId: string;
   doctorId: string;
   notes: string;
   diagnosis: string;
   prescription: string;
 }) {
-  await consultationApi.complete(params.queueId, {
+  await consultationApi.complete(params.consultationId, {
     notes: params.notes,
     diagnosis: params.diagnosis,
     prescription: params.prescription,
