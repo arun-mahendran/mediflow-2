@@ -14,7 +14,7 @@ DISCLAIMER = (
 
 GEMINI_URL = (
     "https://generativelanguage.googleapis.com/v1beta/models/"
-    "gemini-2.0-flash:generateContent"
+    "gemini-3.5-flash:generateContent"
 )
 
 EMERGENCY_KEYWORDS = [
@@ -88,12 +88,34 @@ def _keyword_fallback(symptoms: str) -> dict:
 
 
 def _parse_gemini_json(text: str) -> Optional[dict]:
+    text = text.strip()
+
+    # Remove markdown code fences
+    if text.startswith("```json"):
+        text = text[7:]
+
+    elif text.startswith("```"):
+        text = text[3:]
+
+    if text.endswith("```"):
+        text = text[:-3]
+
+    text = text.strip()
+
+    # First try direct JSON parsing
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+
+    # If Gemini added extra text, extract JSON object
     match = re.search(r"\{.*\}", text, re.DOTALL)
+
     if not match:
         return None
+
     try:
-        data = json.loads(match.group(0))
-        return data
+        return json.loads(match.group(0))
     except json.JSONDecodeError:
         return None
 
@@ -116,15 +138,25 @@ async def analyze_symptoms(symptoms: str, age: Optional[int] = None, gender: Opt
     )
 
     payload = {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.2},
+        "contents": [
+            {
+                "parts": [
+                    {
+                        "text": prompt
+                    }
+                ]
+            }
+        ]
     }
 
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:
             response = await client.post(
                 GEMINI_URL,
-                params={"key": settings.GEMINI_API_KEY},
+                headers={
+                    "x-goog-api-key": settings.GEMINI_API_KEY,
+                    "Content-Type": "application/json",
+                },
                 json=payload,
             )
             response.raise_for_status()
@@ -149,7 +181,9 @@ async def analyze_symptoms(symptoms: str, age: Optional[int] = None, gender: Opt
                 "reason": parsed.get("reason", "AI triage assessment based on reported symptoms."),
                 "source": "ai",
             }
-    except Exception:
+    except Exception as e:
+        print(f"Gemini API error: {e}")
+
         result = _keyword_fallback(symptoms)
         result["source"] = "fallback"
         return result
