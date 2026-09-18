@@ -13,7 +13,6 @@ import {
   STATUS_TIMELINE,
   estimatedWaitMinutes,
   priorityScore,
-  waitingMinutes,
   type QueueStatus,
 } from "@/lib/mediflow";
 import { cn } from "@/lib/utils";
@@ -223,7 +222,7 @@ export default function PatientDashboard() {
               <div className="panel pd-rise space-y-3 p-6" style={{ animationDelay: "0.38s" }}>
                 <h2 className="text-lg font-semibold">Your submission</h2>
 
-                <Detail label="Waiting for" value={`${waitingMinutes(current.created_at)} min`} />
+                <Detail label="Estimated wait" value={`${eta} min`} />
                 <Detail label="Urgency" value={current.urgency} />
                 <Detail
                   label="Priority score"

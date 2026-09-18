@@ -165,7 +165,7 @@ export default function DoctorDashboard() {
                 />
                 <Info label="Age" value={activePatient?.age?.toString() ?? "—"} />
                 <Info label="Gender" value={activePatient?.gender ?? "—"} />
-                <Info label="Waiting" value={`${waitingMinutes(active.created_at)} min`} />
+                <Info label="Waited" value={`${waitingMinutes(active.created_at)} min`} />
                 <div className="sm:col-span-3">
                   <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                     Symptoms

@@ -35,7 +35,7 @@ export function QueueTable({
             <th className="px-4 py-3 font-semibold">Patient</th>
             <th className="px-4 py-3 font-semibold">Symptoms</th>
             <th className="px-4 py-3 font-semibold">Urgency</th>
-            <th className="px-4 py-3 font-semibold">Waiting</th>
+            <th className="px-4 py-3 font-semibold">Waited</th>
             {showDoctor && <th className="px-4 py-3 font-semibold">Doctor</th>}
             <th className="px-4 py-3 font-semibold">Status</th>
             {actionFor && <th className="px-4 py-3 font-semibold">Action</th>}
@@ -83,7 +83,7 @@ export function QueueTable({
             <p className="line-clamp-2 text-sm text-muted-foreground">{row.symptoms}</p>
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               <StatusBadge status={row.status} />
-              <span>{waitingMinutes(row.created_at)} min waiting</span>
+              <span>{waitingMinutes(row.created_at)} min waited</span>
               {row.department && <span>· {row.department}</span>}
             </div>
             {actionFor?.(row)}

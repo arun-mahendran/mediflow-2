@@ -59,10 +59,18 @@ def call_next(db: Session, doctor: Doctor) -> Optional[QueueEntry]:
     if not ordered:
         return None
 
+    if not doctor.department_id:
+        return None
+
     same_department = [
-        e for e in ordered if doctor.department_id and e.department_id == doctor.department_id
+        e for e in ordered
+        if e.department_id == doctor.department_id
     ]
-    chosen = same_department[0] if same_department else ordered[0]
+
+    if not same_department:
+        return None
+
+    chosen = same_department[0]
 
     chosen.status = QueueStatus.CALLED
     chosen.doctor_id = doctor.id
